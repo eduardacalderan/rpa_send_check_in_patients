@@ -13,6 +13,8 @@ def setup_logging():
   configure_logging(log_filename)
   # Create a console handler
   create_console_handler()
+  # Set logging level for third-party libraries
+  set_third_party_loggers()
   
 def configure_logging(log_filename):
   logging.basicConfig(
@@ -29,3 +31,9 @@ def create_console_handler():
   console_handler.setFormatter(logging.Formatter('%(asctime)s %(name)s %(message)s', datefmt='%d/%m/%Y %I:%M:%S %p'))
   # Add the console handler to the root logger
   logging.getLogger().addHandler(console_handler)
+
+def set_third_party_loggers():
+  # Set the logging level for third-party libraries to WARNING or higher
+  logging.getLogger('selenium').setLevel(logging.WARNING)
+  logging.getLogger('urllib3').setLevel(logging.WARNING)
+  # Add other third-party libraries as needed
