@@ -136,6 +136,16 @@ class WebDietAutomation:
         self.wait.until(EC.visibility_of_element_located((By.XPATH, '//div[@id="swal2-content"]//div[@class="botao" and text()="confirmar"]'))).click()
         
         self.task_waiting_for_loading()
+        
+        # Switch to the new window opened by WhatsApp Web
+        self.driver.switch_to.window(self.driver.window_handles[-1])
+        logger.debug('Switched to WhatsApp Web window.')
+        
+        # get whatsapp funtions .... 
+        
+        # Switch back to the original window
+        self.driver.switch_to.window(self.driver.window_handles[0])
+        logger.debug('Switched back to the original window.')
       logger.debug('Opened patient scheduling modal successfully.')
     except Exception as e:
       logger.error(f'Error opening patient scheduling modal: {e}')
