@@ -9,6 +9,6 @@ if __name__ == "__main__":
   logger = logging.getLogger('main:')
   logger.debug('This is a test debug message')
   
-  web_diet_automation = WebDietAutomation()
+  web_diet_automation = WebDietAutomation()  
   web_diet_automation.perform_tasks()
 
