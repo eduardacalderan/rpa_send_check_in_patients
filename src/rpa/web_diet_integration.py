@@ -31,10 +31,8 @@ class WebDietAutomation:
       self.task_waiting_for_loading()
       # Open the scheduling page
       self.task_open_schedule()
-      # Wait for the page to load
-      self.task_waiting_for_loading()
-      
-      #  Add more tasks as needed
+     
+      self.task_send_check_in()
     except Exception as e:
       logger.error(f'Error performing task: {e}')
       raise
@@ -74,18 +72,16 @@ class WebDietAutomation:
       
       schedule_link = self.driver.find_element(By.XPATH, '//a[@href="agenda.php"]')
       schedule_link.click() 
-      
-      self.task_waiting_for_loading()
-      
-      month_button = self.driver.find_element(By.XPATH, '//button[@title="Mês"]')
-      month_button.click()
-      
       self.task_waiting_for_loading()
       
       overview = self.driver.find_element(By.XPATH, '//div[text()="Visão geral"]')
       overview.click()
-      
       self.task_waiting_for_loading()
+      
+      month_button = self.driver.find_element(By.XPATH, '//button[@title="Mês"]')
+      month_button.click()
+      self.task_waiting_for_loading()
+            
       logger.debug('Opened schedule successfully.')
     except Exception as e:
       logger.error(f'Error opening schedule: {e}')
@@ -105,15 +101,15 @@ class WebDietAutomation:
   
   def search_certain_date(self):
     try:
-      last_thirty_days = Date.get_last_thirty_days()
+      last_thirty_days = Date.get_last_thirty_days(self)
       logger.debug(f'Searching for date: {last_thirty_days}')
       
-      search_for_date = self.driver.find_element(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]')
+      search_for_date = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]')
       while not search_for_date:
-        overview = self.driver.find_element(By.XPATH, '//button[@title="Anterior"')
+        overview = self.driver.find_element(By.XPATH, '//button[@title="Anterior"]')
         overview.click()
         self.task_waiting_for_loading()
-        search_for_date = self.driver.find_element(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]')
+        search_for_date = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]')
       logger.debug(f'Found date: {last_thirty_days}')  
       
     except Exception as e:
