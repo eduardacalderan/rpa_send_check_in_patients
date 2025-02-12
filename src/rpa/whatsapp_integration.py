@@ -4,7 +4,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import logging 
 
 logger = logging.getLogger('web_diet_integration:')
-class WHatsApp:
+class WhatsApp():
+    
   def send_message(self):
     try:
       self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a[contains(@title, "Share on WhatsApp")]'))).click()

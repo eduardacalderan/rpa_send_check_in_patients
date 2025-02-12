@@ -1,25 +1,19 @@
 # src\rpa\web_diet_integration.py
-from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import logging
 import os 
-from dotenv import load_dotenv
-
+from base.navigator import BaseNavigator
 from utils.date_utils import Date
-
+from .whatsapp_integration import WhatsApp
+ 
 logger = logging.getLogger('web_diet_integration:')
 
-class WebDietAutomation:
+class WebDietAutomation(BaseNavigator, Date, WhatsApp):
   def __init__(self):
-    load_dotenv()
-    self.driver = webdriver.Chrome()  
-    self.wait = WebDriverWait(self.driver, 10)
-    self.wait_long = WebDriverWait(self.driver, 120)
-    
-    
+    super().__init__()
+
   def perform_tasks(self):
     """Perform a task using Selenium WebDriver."""
     try:
@@ -37,8 +31,7 @@ class WebDietAutomation:
       logger.error(f'Error performing task: {e}')
       raise
     finally:
-      self.driver.quit()
-      logger.debug('WebDriver closed.')
+      self.teardown_driver()
       
   def open_web_diet(self):
     try:
@@ -87,23 +80,23 @@ class WebDietAutomation:
       logger.error(f'Error opening schedule: {e}')
       raise
     
-  def task_send_check_in(self):
+  def task_send_check_in(self,):
     try:
+      last_thirty_days = Date.get_last_thirty_days(self)
+      logger.debug(f'Searching for date: {last_thirty_days}')
+      
       # Search for the last thirty days
-      self.search_certain_date()
+      self.search_certain_date(last_thirty_days)
       # Open the patient scheduled in the last thirty days
-      self.open_patient_scheduling_modal()
+      self.open_patient_scheduling_modal_and_send_message(last_thirty_days)
       # Send WhatsApp message
       logger.debug('Opened scheduling successfully.')
     except Exception as e:
       logger.error(f'Error opening scheduling: {e}')
       raise
   
-  def search_certain_date(self):
-    try:
-      last_thirty_days = Date.get_last_thirty_days(self)
-      logger.debug(f'Searching for date: {last_thirty_days}')
-      
+  def search_certain_date(self, last_thirty_days):
+    try:      
       search_for_date = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]')
       while not search_for_date:
         overview = self.driver.find_element(By.XPATH, '//button[@title="Anterior"]')
@@ -116,9 +109,9 @@ class WebDietAutomation:
       logger.error(f'Error searching for date: {e}')
       raise
   
-  def open_patient_scheduling_modal(self):
+  def open_patient_scheduling_modal_and_send_message(self, last_thirty_days):
     try:
-      scheduled_patients = self.driver.find_elements(By.XPATH, '//a[@aria-label="4 de fevereiro de 2025"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5")]')
+      scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{'13 de janeiro de 2025'}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5")]')
             
       for scheduled_patient in scheduled_patients:
         scheduled_patient.click()
@@ -138,11 +131,14 @@ class WebDietAutomation:
         logger.debug('Switched to WhatsApp Web window.')
         
         # get whatsapp funtions .... 
-        
+        self.send_message()
         # Switch back to the original window
         self.driver.switch_to.window(self.driver.window_handles[0])
+        
         logger.debug('Switched back to the original window.')
-      logger.debug('Opened patient scheduling modal successfully.')
+        month_button = self.driver.find_element(By.XPATH, '//button[@title="Mês"]')
+        month_button.click()
+      logger.debug('Opened patients scheduling modal and sended messages successfully.')
     except Exception as e:
       logger.error(f'Error opening patient scheduling modal: {e}')
       raise                                     
