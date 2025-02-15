@@ -1,12 +1,12 @@
 # Envio de check-in para pacientes
 
-Para o envio de check-in deverá ser pego todos os pacientes que foram atendidos há 30 dias atrás. Esse processo deverá ser feito diariamente.
+***Para o envio de check-in deverá ser pego todos os pacientes que foram atendidos há 30 dias atrás. Esse processo deverá ser feito diariamente***.
 
 ## Passo a passo do processo realizado
 
 ### Passo 1
 
-![Login na Plataforma](docs/images/first_step.png)
+![Realiza Login na Plataforma](docs/images/first_step.png)
 ![Imagem de Aguarda Carregamento](docs/images/wait_loading.png)
 
 ### Passo 2
