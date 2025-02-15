@@ -1,4 +1,3 @@
-# src\configs\logging_config.py
 import logging 
 from datetime import datetime
 import os 
