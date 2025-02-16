@@ -128,3 +128,7 @@ logs/
 config/config.yaml
 
 ~
+None/
+
+# Results files 
+already_processed_phones/
