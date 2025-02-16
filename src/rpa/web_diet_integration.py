@@ -4,51 +4,45 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 import logging
 import os 
-<<<<<<< webdiet-selenium-integration
 from base.navigator import BaseNavigator
-=======
 import time
->>>>>>> local
 from utils.date_utils import Date
 from .whatsapp_integration import WhatsApp
- 
+from selenium.webdriver.support.ui import WebDriverWait
+from base.navigator import BaseNavigator
+
 logger = logging.getLogger('web_diet_integration:')
 
 class WebDietAutomation(BaseNavigator, Date, WhatsApp):
   def __init__(self):
     super().__init__()
+    
+    self.wait = WebDriverWait(self.driver, 10)
+    self.wait_long = WebDriverWait(self.driver, 120)
 
   def perform_tasks(self):
     """Perform a task using Selenium WebDriver."""
     try:
       # Open the webdiet page
-      self.open_web_diet()
+      self.open_page(url='https://pt.webdiet.com.br/login/')
       # Perform the login task on the webdiet page
       self.task_login_web_diet()
       # Wait for the page to load
       self.task_waiting_for_loading()
       # Open the scheduling page
       self.task_open_schedule()
-     
+      # Send the check-in message
       self.task_send_check_in()
     except Exception as e:
       logger.error(f'Error performing task: {e}')
       raise
     finally:
-      self.teardown_driver()
-      
-  def open_web_diet(self):
-    try:
-      self.driver.get('https://pt.webdiet.com.br/login/')
-      logger.debug('Navigated to https://pt.webdiet.com.br/login/')
-    except Exception as e:
-      logger.error(f'Error opening webdiet: {e}')
-      raise
+      self.teardown_driver()    
 
   def task_login_web_diet(self):
-    try:
-      search_box = self.driver.find_element(By.NAME, 'user')
-      search_box.send_keys(os.getenv('EMAIL_WEB_DIET') + Keys.TAB + os.getenv('PASSWORD_WEB_DIET') + Keys.RETURN)
+    try:  
+      self.wait.until(EC.visibility_of_element_located((By.NAME, 'user'))).send_keys(Keys.CONTROL + 'a' + Keys.DELETE)    
+      self.wait.until(EC.visibility_of_element_located((By.NAME, 'user'))).send_keys(os.getenv('EMAIL_WEB_DIET') + Keys.TAB + os.getenv('PASSWORD_WEB_DIET') + Keys.RETURN)
       
       logger.debug('Logged in webdiet successfully.')
     except Exception as e:
@@ -60,7 +54,7 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       self.wait_long.until_not(EC.visibility_of_element_located((By.XPATH, '//div[@id="loadingPage"]')))
       logger.debug('Page loaded successfully.')
     except Exception as e:
-      logger.error(f'Error waiting for loading: {e}')
+      logger.error(f'Erorr waiting for loading: {e}')
   
   def task_open_schedule(self):
     try:      
@@ -88,7 +82,7 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       # Search for the last thirty days
       self.search_certain_date(last_thirty_days)
       # Open the patient scheduled in the last thirty days
-      self.open_patient_scheduling_modal_and_send_message(last_thirty_days)
+      self.task_open_patient_scheduling_modal_and_send_message(last_thirty_days)
       # Send WhatsApp message
       logger.debug('Opened scheduling successfully.')
     except Exception as e:
@@ -108,9 +102,10 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       logger.error(f'Error searching for date: {e}')
       raise
   
-  def open_patient_scheduling_modal_and_send_message(self, last_thirty_days):
+  def task_open_patient_scheduling_modal_and_send_message(self, last_thirty_days):
     try:
       time.sleep(3)
+
       scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5")]')
             
       for scheduled_patient in scheduled_patients:
