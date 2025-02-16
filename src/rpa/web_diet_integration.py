@@ -9,7 +9,6 @@ import time
 from utils.date_utils import Date
 from .whatsapp_integration import WhatsApp
 from selenium.webdriver.support.ui import WebDriverWait
-from base.navigator import BaseNavigator
 
 logger = logging.getLogger('web_diet_integration:')
 
@@ -140,3 +139,14 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
     except Exception as e:
       logger.error(f'Error opening patient scheduling modal: {e}')
       raise                                     
+  
+  def get_phone_number_patient(self):
+    try:
+      phone_number = self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a[@aria-label="16 de janeiro de 2025"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5")]//div[text()="54996034005"]'))).text
+      logger.debug(f'Phone number: {phone_number}')
+      
+      
+      return phone_number
+    except Exception as e:
+      logger.error(f'Error getting phone number: {e}')
+      raise
