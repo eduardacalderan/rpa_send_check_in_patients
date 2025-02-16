@@ -4,7 +4,11 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 import logging
 import os 
+<<<<<<< webdiet-selenium-integration
 from base.navigator import BaseNavigator
+=======
+import time
+>>>>>>> local
 from utils.date_utils import Date
 from .whatsapp_integration import WhatsApp
  
@@ -59,20 +63,16 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       logger.error(f'Error waiting for loading: {e}')
   
   def task_open_schedule(self):
-    try:
-      office_button = self.driver.find_element(By.XPATH, '//div[contains(text(), "Consultório")]')
-      office_button.click()
+    try:      
+      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//div[contains(text(), "Consultório")]'))).click()
       
-      schedule_link = self.driver.find_element(By.XPATH, '//a[@href="agenda.php"]')
-      schedule_link.click() 
+      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a[@href="agenda.php"]'))).click()
       self.task_waiting_for_loading()
       
-      overview = self.driver.find_element(By.XPATH, '//div[text()="Visão geral"]')
-      overview.click()
+      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//div[text()="Visão geral"]'))).click()
       self.task_waiting_for_loading()
       
-      month_button = self.driver.find_element(By.XPATH, '//button[@title="Mês"]')
-      month_button.click()
+      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//button[@title="Mês"]'))).click()
       self.task_waiting_for_loading()
             
       logger.debug('Opened schedule successfully.')
@@ -99,8 +99,7 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
     try:      
       search_for_date = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]')
       while not search_for_date:
-        overview = self.driver.find_element(By.XPATH, '//button[@title="Anterior"]')
-        overview.click()
+        self.wait.until(EC.visibility_of_element_located((By.XPATH, '//button[@title="Anterior"]'))).click()
         self.task_waiting_for_loading()
         search_for_date = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]')
       logger.debug(f'Found date: {last_thirty_days}')  
@@ -111,7 +110,8 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
   
   def open_patient_scheduling_modal_and_send_message(self, last_thirty_days):
     try:
-      scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{'13 de janeiro de 2025'}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5")]')
+      time.sleep(3)
+      scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5")]')
             
       for scheduled_patient in scheduled_patients:
         scheduled_patient.click()
@@ -132,12 +132,15 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
         
         # get whatsapp funtions .... 
         self.send_message()
+        
         # Switch back to the original window
+        self.driver.close()
         self.driver.switch_to.window(self.driver.window_handles[0])
         
         logger.debug('Switched back to the original window.')
-        month_button = self.driver.find_element(By.XPATH, '//button[@title="Mês"]')
-        month_button.click()
+        
+        self.wait.until(EC.visibility_of_element_located((By.XPATH, '//button[@title="Mês"]'))).click()
+
       logger.debug('Opened patients scheduling modal and sended messages successfully.')
     except Exception as e:
       logger.error(f'Error opening patient scheduling modal: {e}')
