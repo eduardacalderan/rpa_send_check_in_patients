@@ -3,11 +3,13 @@ from selenium.webdriver.support.ui import WebDriverWait
 from utils.chrome_utils import ChromeUtils
 import logging
 logger = logging.getLogger('BaseNavigator:')
+
 class BaseNavigator(ChromeUtils):
     def __init__(self):             
         ChromeUtils.__init__(self, profile_directory='Profile 2')
-        self.wait = WebDriverWait(self.driver, 10)
+        self.wait = WebDriverWait(self.driver, 30)
         self.wait_long = WebDriverWait(self.driver, 120)
+        self.wait_extra_long = WebDriverWait(self.driver, 60*5)
         
     def open_page(self, url:str):
         try:

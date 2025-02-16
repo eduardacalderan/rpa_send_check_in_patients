@@ -6,7 +6,6 @@ from datetime import datetime, timedelta
 logger = logging.getLogger('web_diet_integration:')
 
 class Date:
-  
   def get_last_thirty_days(self):
     """Get the last thirty days from today."""
     try:
