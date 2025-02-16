@@ -1,3 +1,4 @@
 selenium
 pyyaml
 python-dotenv
+webdriver-manager

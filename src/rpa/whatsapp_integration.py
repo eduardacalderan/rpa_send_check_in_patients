@@ -8,8 +8,8 @@ class WhatsApp():
     
   def send_message(self):
     try:
-      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a[contains(@title, "Share on WhatsApp")]'))).click()
-      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a//span[text()="use WhatsApp Web"]'))).click()
+      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a[Compartilhe no WhatsApp")]'))).click()
+      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a//span[text()="usar o WhatsApp Web"]'))).click()
       
       logger.debug('Sending a message on WhatsApp.')
     except Exception as e:
