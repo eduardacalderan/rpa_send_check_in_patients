@@ -109,7 +109,6 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
   
   def task_open_patient_scheduling_modal_and_send_message(self, last_thirty_days):
     try:
-      return
       time.sleep(3)
 
       scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]')
