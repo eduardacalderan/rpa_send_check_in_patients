@@ -2,7 +2,7 @@
 import logging 
 from configs.logging_config import setup_logging
 from rpa.web_diet_integration import WebDietAutomation
-from utils.email_utils import Email
+from services.email_service import Email
 from dotenv import load_dotenv
 
 if __name__ == "__main__":

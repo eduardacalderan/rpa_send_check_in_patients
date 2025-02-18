@@ -1,4 +1,3 @@
-# src\utils\email_utils.py
 from datetime import datetime
 import os
 import smtplib
