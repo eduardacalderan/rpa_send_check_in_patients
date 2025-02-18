@@ -10,7 +10,7 @@ from utils.date_utils import Date
 from .whatsapp_integration import WhatsApp
 from selenium.webdriver.support.ui import WebDriverWait
 from services.excel_service import ExcelService
-from selenium.webdriver.common.action_chains import ActionChains
+from utils.retry_decorator_utils import retry
 
 logger = logging.getLogger('web_diet_integration:')
 
@@ -21,6 +21,7 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
     self.wait = WebDriverWait(self.driver, 30)
     self.wait_long = WebDriverWait(self.driver, 120)
 
+  @retry(Exception, tries=3, delay=2, backoff=2)
   def perform_tasks(self):
     """Perform a task using Selenium WebDriver."""
     try:
@@ -34,12 +35,15 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       self.task_open_schedule()
       # Send the check-in message
       self.task_send_check_in()
+      
+      return True
     except Exception as e:
       logger.error(f'Error performing task: {e}')
-      raise
+      return False
     finally:
       self.teardown_driver()    
 
+  @retry(Exception, tries=3, delay=2, backoff=2)
   def task_login_web_diet(self):
     try:  
       self.wait.until(EC.visibility_of_element_located((By.NAME, 'user'))).send_keys(Keys.CONTROL + 'a' + Keys.DELETE)    
@@ -105,13 +109,12 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
   
   def task_open_patient_scheduling_modal_and_send_message(self, last_thirty_days):
     try:
+      return
       time.sleep(3)
 
-      scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5")]')
+      scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]')
             
-      for scheduled_patient in scheduled_patients:
-        ActionChains(self.driver).move_to_element(scheduled_patient).perform()
-      
+      for scheduled_patient in scheduled_patients:      
         scheduled_patient.click()
         
         self.wait.until(EC.visibility_of_element_located((By.XPATH, '//div[contains(text(), "solicitar confirmação")]'))).click()

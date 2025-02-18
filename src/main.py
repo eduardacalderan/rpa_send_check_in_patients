@@ -2,7 +2,7 @@
 import logging 
 from configs.logging_config import setup_logging
 from rpa.web_diet_integration import WebDietAutomation
-
+from utils.email_utils import Email
 from dotenv import load_dotenv
 
 if __name__ == "__main__":
@@ -11,7 +11,11 @@ if __name__ == "__main__":
   setup_logging()
   logger = logging.getLogger('main:')
   logger.debug('This is a test debug message')
-  
   web_diet_automation = WebDietAutomation()  
-  web_diet_automation.perform_tasks()
+  email = Email()
+  
+  if web_diet_automation.perform_tasks():
+    email.send_email('ENVIO CHECK-IN FINALIZADO, CONFERIR ARQUIVOS')
+  else:
+    email.send_email('ERRO AO ENVIAR CHECK-IN, VERIFICAR ARQUIVOS/LOGS')
 
