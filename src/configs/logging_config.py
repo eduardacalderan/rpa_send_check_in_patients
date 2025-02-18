@@ -1,3 +1,4 @@
+# src\configs\logging_config.py
 import logging 
 from datetime import datetime
 import os 
@@ -17,7 +18,7 @@ def setup_logging():
   
 def configure_logging(log_filename):
   logging.basicConfig(
-    format='%(asctime)s %(name)s %(message)s',
+    format='%(asctime)s - %(filename)s - 	%(module)s -  %(funcName)s - %(levelname)s - %(lineno)d - %(message)s',
     datefmt='%d/%m/%Y %I:%M:%S %p',
     filename=log_filename,
     encoding='utf-8',
@@ -27,7 +28,7 @@ def configure_logging(log_filename):
 def create_console_handler():
   console_handler = logging.StreamHandler()
   console_handler.setLevel(logging.DEBUG)
-  console_handler.setFormatter(logging.Formatter('%(asctime)s %(name)s %(message)s', datefmt='%d/%m/%Y %I:%M:%S %p'))
+  console_handler.setFormatter(logging.Formatter('%(asctime)s - %(filename)s - %(message)s', datefmt='%d/%m/%Y %I:%M:%S %p'))
   # Add the console handler to the root logger
   logging.getLogger().addHandler(console_handler)
 

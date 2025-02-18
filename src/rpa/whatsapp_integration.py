@@ -1,11 +1,12 @@
 # src\rpa\whatsapp_integration.py
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from utils.retry_decorator_utils import retry
 import logging 
 
-logger = logging.getLogger('web_diet_integration:')
+logger = logging.getLogger('whatsapp_integration:')
 class WhatsApp():
-    
+  
   def send_message(self):
     try:      
       self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a[@title="Compartilhe no WhatsApp"]'))).click()
@@ -22,25 +23,27 @@ class WhatsApp():
       logger.error(f'Error sending message on WhatsApp: {e}')
       raise
   
+  @retry(Exception, tries=3, delay=2, backoff=2)
   def verify_message_status(self) -> str:
     try:
       
-      sended_message = self.wait_long.until(EC.visibility_of_element_located((By.XPATH, '//span[contains(@aria-label, "Enviada")]')))
-      self.verify_success_status_check(sended_message)
+      sended_message = self.driver.find_elements(By.XPATH, '//span[contains(@aria-label, "Enviada")]')
+      if len(sended_message) > 0:
+        logger.debug('Message sent successfully.')
+        return 'SUCCESS'
       
-      delivered_message = self.wait_long.until(EC.visibility_of_element_located((By.XPATH, '//span[contains(@aria-label, "Entregue")]')))
-      self.verify_success_status_check(delivered_message)
-     
-      read_message = self.wait_long.until(EC.visibility_of_element_located((By.XPATH, '//span[contains(@aria-label, "Lida")]')))
-      self.verify_success_status_check(read_message)
+      delivered_message = self.driver.find_elements(By.XPATH, '//span[contains(@aria-label, "Entregue")]')
+      if len(delivered_message) > 0:
+        logger.debug('Message sent successfully.')
+        return 'SUCCESS'
+    
+      read_message = self.driver.find_elements(By.XPATH, '//span[contains(@aria-label, "Lida")]')
+      if len(read_message) > 0:
+        logger.debug('Message sent successfully.')
+        return 'SUCCESS'
       
       logger.debug('Message not sent successfully.')
       return 'ERROR'
     except Exception as e:
       logger.error(f'Error verifying message status: {e}')
       raise
-  
-  def verify_success_status_check(status_required) -> str | None:
-    if status_required:
-      logger.debug('Message sent successfully.')
-      return 'SUCCESS'
