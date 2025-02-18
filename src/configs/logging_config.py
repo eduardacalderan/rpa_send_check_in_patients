@@ -37,3 +37,4 @@ def set_third_party_loggers():
   logging.getLogger('selenium').setLevel(logging.WARNING)
   logging.getLogger('urllib3').setLevel(logging.WARNING)
   # Add other third-party libraries as needed
+  
