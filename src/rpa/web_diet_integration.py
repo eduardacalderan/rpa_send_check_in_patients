@@ -36,14 +36,12 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       # Send the check-in message
       self.task_send_check_in()
       
+      self.teardown_driver()    
       return True
     except Exception as e:
       logger.error(f'Error performing task: {e}')
-      return False
-    finally:
-      self.teardown_driver()    
-
-  @retry(Exception, tries=3, delay=2, backoff=2)
+      raise
+      
   def task_login_web_diet(self):
     try:  
       self.wait.until(EC.visibility_of_element_located((By.NAME, 'user'))).send_keys(Keys.CONTROL + 'a' + Keys.DELETE)    
@@ -60,7 +58,8 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       logger.debug('Page loaded successfully.')
     except Exception as e:
       logger.error(f'Erorr waiting for loading: {e}')
-  
+      raise
+    
   def task_open_schedule(self):
     try:      
       self.wait.until(EC.visibility_of_element_located((By.XPATH, '//div[contains(text(), "Consultório")]'))).click()
@@ -93,7 +92,7 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
     except Exception as e:
       logger.error(f'Error opening scheduling: {e}')
       raise
-  
+    
   def search_certain_date(self, last_thirty_days):
     try:      
       search_for_date = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]')
@@ -106,10 +105,10 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
     except Exception as e:
       logger.error(f'Error searching for date: {e}')
       raise
-  
+    
   def task_open_patient_scheduling_modal_and_send_message(self, last_thirty_days):
     try:
-      time.sleep(3)
+      time.sleep(5)
 
       scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]')
             
@@ -134,8 +133,11 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
         logger.debug('Switched to WhatsApp Web window.')
         
         phone_number = self.get_phone_number_patient()
+        phone_number = str(phone_number).replace(" ", "").replace("+55", "").replace("-", "")
         verify_phone_number_already_processed = ExcelService.verify_phone_number_already_processed(self, phone_number, last_thirty_days)
-        if verify_phone_number_already_processed == 'ARLEADY_PROCESSED':
+        if verify_phone_number_already_processed == 'ALREADY_PROCESSED':
+          self.driver.close()
+          self.driver.switch_to.window(self.driver.window_handles[0])
           continue
         
         # get whatsapp funtions .
@@ -159,8 +161,8 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       logger.debug('Opened patients scheduling modal and sended messages successfully.')
     except Exception as e:
       logger.error(f'Error opening patient scheduling modal: {e}')
-      raise                                     
-  
+      raise
+    
   def get_phone_number_patient(self):
     try:
       phone_number = self.wait.until(EC.visibility_of_element_located((By.XPATH, '//p[contains(text(), "Conversar com")]//span'))).text
@@ -169,4 +171,4 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       return phone_number
     except Exception as e:
       logger.error(f'Error getting phone number: {e}')
-      raise
+      raise 

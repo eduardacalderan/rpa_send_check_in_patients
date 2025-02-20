@@ -12,6 +12,8 @@ class ExcelService:
     else:
       df = pd.DataFrame(columns=["Phone Numbers", "Date", "Status"])
 
+    phone_number = str(phone_number).replace(" ", "").replace("+55", "").replace("-", "")
+    df['Phone Numbers'] = df['Phone Numbers'].astype(str)
     new_entry = pd.DataFrame([[phone_number, date, status]], columns=["Phone Numbers", "Date", "Status"])
     df = pd.concat([df, new_entry], ignore_index=True)
     df.to_excel(file_path, index=False)
@@ -21,7 +23,11 @@ class ExcelService:
     if os.path.exists(file_path):
       df = pd.read_excel(file_path)
       phone_number = str(phone_number).replace(" ", "").replace("+55", "").replace("-", "")
-      if not df[(df['Phone Numbers'] == phone_number) & (df['Status'] == 'Sent')].empty:
+      
+      df['Phone Numbers'] = df['Phone Numbers'].astype(str)
+      phone_number_already_processed = df.loc[df['Phone Numbers'] == phone_number]
+      if not phone_number_already_processed.empty:
+        if 'Sent' in phone_number_already_processed['Status'].values:
           print(f"Phone number {phone_number} already processed.")
           return 'ALREADY_PROCESSED'
     return None
