@@ -2,8 +2,10 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from utils.retry_decorator_utils import retry
+import time
 import logging 
 logger = logging.getLogger('whatsapp_integration:')
+
 class WhatsApp():
   
   def send_message(self):
@@ -19,6 +21,8 @@ class WhatsApp():
         return 'ERROR'
       
       self.wait_extra_long.until(EC.visibility_of_element_located((By.XPATH, '//button[@aria-label="Enviar"]'))).click()
+      
+      time.sleep(1)
       
       verify_message_status = self.verify_message_status()
       if verify_message_status == 'SUCCESS':
@@ -47,6 +51,12 @@ class WhatsApp():
       if len(read_message) > 0:
         logger.debug('Message sent successfully.')
         return 'SUCCESS'
+      
+      error_to_send_message = self.driver.find_elements(By.XPATH, '//span[contains(@data-icon, "error")]')
+      if error_to_send_message:
+        error_to_send_message[0].click()
+        self.wait.until(EC.visibility_of_element_located((By.XPATH, '//div[contains(text(), "Tentar novamente")]//ancestor::button'))).click()
+
       
       logger.debug('Message not sent successfully.')
       return 'ERROR'
