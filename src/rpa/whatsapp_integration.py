@@ -22,7 +22,7 @@ class WhatsApp():
       
       self.wait_extra_long.until(EC.visibility_of_element_located((By.XPATH, '//button[@aria-label="Enviar"]'))).click()
       
-      time.sleep(1)
+      time.sleep(5)
       
       verify_message_status = self.verify_message_status()
       if verify_message_status == 'SUCCESS':
