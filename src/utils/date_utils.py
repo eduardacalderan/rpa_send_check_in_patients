@@ -17,3 +17,15 @@ class Date:
     except Exception as e:
       logger.error(f'Error getting last thirty days: {e}')
       raise
+    
+  def validate_monday(self):
+    """Validate if today is Monday."""
+    try:
+      today = datetime.today()
+      if today.weekday() == 0:
+        return True
+      return False
+    except Exception as e:
+      logger.error(f'Error validating Monday: {e}')
+      raise
+  

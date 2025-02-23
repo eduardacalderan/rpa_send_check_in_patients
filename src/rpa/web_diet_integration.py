@@ -1,17 +1,18 @@
 # src\rpa\web_diet_integration.py
+import os 
+import time
+from datetime import timedelta
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
-import logging
-import os 
 from base.navigator import BaseNavigator
-import time
 from utils.date_utils import Date
 from .whatsapp_integration import WhatsApp
 from selenium.webdriver.support.ui import WebDriverWait
 from services.excel_service import ExcelService
 from utils.retry_decorator_utils import retry
 
+import logging
 logger = logging.getLogger('web_diet_integration:')
 
 class WebDietAutomation(BaseNavigator, Date, WhatsApp):
@@ -109,9 +110,12 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
   def task_open_patient_scheduling_modal_and_send_message(self, last_thirty_days):
     try:
       time.sleep(5)
-
-      scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]')
-            
+      
+      if not self.validate_monday():
+        scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]')
+      else: 
+        scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}" or @aria-label="{last_thirty_days - timedelta(days=30)}" or @aria-label="{last_thirty_days - timedelta(days=31)}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]')  
+        
       for scheduled_patient in scheduled_patients:      
         scheduled_patient.click()
         
