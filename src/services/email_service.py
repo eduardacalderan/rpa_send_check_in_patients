@@ -1,3 +1,4 @@
+# src\services\email_service.py
 from datetime import datetime
 import os
 import smtplib
@@ -7,13 +8,16 @@ from email.mime.text import MIMEText
 from email import encoders
 
 from utils.date_utils import Date
-class Email: 
-
+class Email(Date): 
+  
+  def __init__(self):
+    Date().__init__()
+    
   def send_email(self, subject):
     subject = subject
     body = "Please find the attached logs files."
     
-    last_thirty_days = Date.get_last_thirty_days(self)
+    last_thirty_days = self.get_last_thirty_days()
     attachment_paths = [
       f'already_processed_phones/phone_numbers_{last_thirty_days}.xlsx',
       f'logs/{datetime.today().strftime("%d_%m_%Y")}_logs.log'
