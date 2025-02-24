@@ -1,7 +1,6 @@
 # src\rpa\web_diet_integration.py
 import os 
 import time
-from datetime import timedelta
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
@@ -95,7 +94,10 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       raise
     
   def search_certain_date(self, last_thirty_days):
-    try:      
+    try:
+      if self.validate_monday():
+        last_thirty_days = last_thirty_days[0]
+        
       search_for_date = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]')
       while not search_for_date:
         self.wait.until(EC.visibility_of_element_located((By.XPATH, '//button[@title="Anterior"]'))).click()
@@ -114,7 +116,9 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       if not self.validate_monday():
         scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]')
       else: 
-        scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}" or @aria-label="{last_thirty_days - timedelta(days=30)}" or @aria-label="{last_thirty_days - timedelta(days=31)}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]')  
+        formatted_date_thirty_one, formatted_date_thirty, formatted_date_twenty_nine = self.get_last_thirty_days()
+        
+        scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{formatted_date_twenty_nine}" or @aria-label="{formatted_date_thirty}" or @aria-label="{formatted_date_thirty_one}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]')  
         
       for scheduled_patient in scheduled_patients:      
         scheduled_patient.click()
