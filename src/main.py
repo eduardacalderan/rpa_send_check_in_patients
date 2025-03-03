@@ -5,7 +5,6 @@ from configs.logging_config import setup_logging
 from rpa.web_diet_integration import WebDietAutomation
 from services.email_service import Email
 from dotenv import load_dotenv
-
 if __name__ == "__main__":
   if datetime.today().weekday() >= 5:  # 5 = Saturday, 6 = Sunday
     exit()
