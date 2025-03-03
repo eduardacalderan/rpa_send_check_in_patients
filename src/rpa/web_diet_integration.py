@@ -173,7 +173,7 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
     
   def get_phone_number_patient(self):
     try:
-      phone_number = self.wait.until(EC.visibility_of_element_located((By.XPATH, '//p[contains(text(), "Conversar com")]//span'))).text
+      phone_number = self.wait.until(EC.visibility_of_element_located((By.XPATH, '//p[contains(text(), "Conversar no WhatsApp com")]//span'))).text
       logger.debug(f'Phone number: {phone_number}')
 
       return phone_number
