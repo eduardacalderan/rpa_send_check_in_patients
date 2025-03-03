@@ -10,11 +10,11 @@ class WhatsApp():
   
   def send_message(self):
     try:      
-      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a[@title="Compartilhe no WhatsApp"]'))).click()
-      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a//span[text()="usar o WhatsApp Web"]'))).click()
+      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a[@title="Partilhar no WhatsApp"]'))).click()
+      self.wait.until(EC.visibility_of_element_located((By.XPATH, '//a//span[text()="utilize o WhatsApp Web"]'))).click()
       
       self.wait.until_not(EC.visibility_of_element_located((By.XPATH, '//progress')))
-      
+      time.sleep(5)
       invalid_phone = self.driver.find_elements(By.XPATH, '//div[contains(text(), "O número de telefone compartilhado por url é inválido.")]')
       if invalid_phone:
         logger.error('Invalid phone number.')

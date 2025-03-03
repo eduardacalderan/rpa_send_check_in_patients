@@ -6,7 +6,7 @@ logger = logging.getLogger('BaseNavigator:')
 
 class BaseNavigator(ChromeUtils):
     def __init__(self):             
-        ChromeUtils.__init__(self, profile_directory='Profile 2')
+        ChromeUtils.__init__(self, profile_directory='Profile 6')
         self.wait = WebDriverWait(self.driver, 60)
         self.wait_long = WebDriverWait(self.driver, 120)
         self.wait_extra_long = WebDriverWait(self.driver, 60*5)
