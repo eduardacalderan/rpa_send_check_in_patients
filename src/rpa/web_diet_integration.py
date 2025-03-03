@@ -120,7 +120,10 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
         
         scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{formatted_date_twenty_nine}" or @aria-label="{formatted_date_thirty}" or @aria-label="{formatted_date_thirty_one}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]')  
         
-      for scheduled_patient in scheduled_patients:      
+      for idx, scheduled_patient in enumerate(scheduled_patients):      
+        # storage patient name
+        name = self.get_name_patient(last_thirty_days, idx)
+        
         scheduled_patient.click()
         
         self.wait.until(EC.visibility_of_element_located((By.XPATH, '//div[contains(text(), "solicitar confirmação")]'))).click()
@@ -156,7 +159,8 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
           status_processed = 'Sent'
         else: 
           status_processed = 'Not sent'
-        ExcelService.create_excel_with_phone_numbers(self, phone_number, self.get_last_thirty_days(), status_processed)
+          
+        ExcelService.create_excel_with_phone_numbers_and_names(self, phone_number, name, self.get_last_thirty_days(), status_processed)
         
         # Switch back to the original window
         self.driver.close()
@@ -179,4 +183,17 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       return phone_number
     except Exception as e:
       logger.error(f'Error getting phone number: {e}')
+      raise 
+    
+  def get_name_patient(self, last_thirty_days, idx):
+    try:
+      if not self.validate_monday():
+        name = self.wait.until(EC.visibility_of_element_located((By.XPATH, f'(//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]//div[contains(@style, "width:70%")])[{idx+1}]'))).text
+      else:
+        formatted_date_thirty_one, formatted_date_thirty, formatted_date_twenty_nine = self.get_last_thirty_days()
+        
+        name = self.wait.until(EC.visibility_of_element_located((By.XPATH, f'(//a[@aria-label="{formatted_date_twenty_nine}" or @aria-label="{formatted_date_thirty}" or @aria-label="{formatted_date_thirty_one}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]//div[contains(@style, "width:70%")])[{idx+1}]'))).text
+      return name
+    except Exception as e:
+      logger.error(f'Error getting name: {e}')
       raise 
