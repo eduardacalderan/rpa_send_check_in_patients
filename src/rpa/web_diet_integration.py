@@ -95,6 +95,9 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
     
   def search_certain_date(self, last_thirty_days):
     try:
+      if last_thirty_days[0].startswith('0'):
+        last_thirty_days = last_thirty_days[1:]
+        
       if self.validate_monday():
         last_thirty_days = last_thirty_days[0]
         
@@ -102,6 +105,7 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
       while not search_for_date:
         self.wait.until(EC.visibility_of_element_located((By.XPATH, '//button[@title="Anterior"]'))).click()
         self.task_waiting_for_loading()
+        time.sleep(5)
         search_for_date = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]')
       logger.debug(f'Found date: {last_thirty_days}')  
       
