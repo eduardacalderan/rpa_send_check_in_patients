@@ -95,6 +95,9 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
     
   def search_certain_date(self, last_thirty_days):
     try:
+      if last_thirty_days[0].startswith('0'):
+        last_thirty_days = last_thirty_days[1:]
+        
       if self.validate_monday():
         last_thirty_days = last_thirty_days[0]
         
