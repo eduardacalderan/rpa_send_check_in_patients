@@ -22,10 +22,22 @@ class Date:
         last_thirty_one_days = today - timedelta(days=31)
         formatted_date_thirty_one = last_thirty_one_days.strftime('%d de %B de %Y')
         
+        if formatted_date_twenty_nine[0].startswith('0'):
+          formatted_date_twenty_nine = formatted_date_twenty_nine[1:]
+        
+        if formatted_date_thirty[0].startswith('0'):
+          formatted_date_thirty = formatted_date_thirty[1:]
+
+        if formatted_date_thirty_one[0].startswith('0'):
+          formatted_date_thirty_one = formatted_date_thirty_one[1:]
+
         return formatted_date_thirty_one, formatted_date_thirty, formatted_date_twenty_nine
         
       last_thirty_days = today - timedelta(days=29)
       formatted_date = last_thirty_days.strftime('%d de %B de %Y')
+
+      if formatted_date[0].startswith('0'):
+        formatted_date = formatted_date[1:]
       
       return formatted_date
     except Exception as e:
