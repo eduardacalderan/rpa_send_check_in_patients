@@ -61,5 +61,4 @@ class WhatsApp():
       logger.debug('Message not sent successfully.')
       return 'ERROR'
     except Exception as e:
-      logger.error(f'Error verifying message status: {e}')
-      raise
+      raise Exception(f'Error verifying message status: {e}')

@@ -41,8 +41,7 @@ class Date:
       
       return formatted_date
     except Exception as e:
-      logger.error(f'Error getting last thirty days: {e}')
-      raise
+      raise Exception(f'Error getting last thirty days: {e}')
   
   @staticmethod  
   def validate_monday():
@@ -53,6 +52,5 @@ class Date:
         return True
       return False
     except Exception as e:
-      logger.error(f'Error validating Monday: {e}')
-      raise
+      raise Exception(f'Error validating Monday: {e}')
   
