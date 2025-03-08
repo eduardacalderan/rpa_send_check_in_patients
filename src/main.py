@@ -13,7 +13,6 @@ if __name__ == "__main__":
 
     setup_logging()
     logger = logging.getLogger('main:')
-    logger.debug('This is a test debug message')
     web_diet_automation = WebDietAutomation()  
     email = Email()
     

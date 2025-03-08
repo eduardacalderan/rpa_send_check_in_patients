@@ -32,8 +32,9 @@ class Email(Date):
       ]
 
     for attachment_path in attachment_paths:
-      self.config_send_email(subject, body, attachment_path)
+      Email.config_send_email(subject, body, attachment_path)
 
+  @staticmethod
   def config_send_email(self, subject, body, attachment_path=None):
     msg = MIMEMultipart()
     msg['From'] = os.getenv('SENDER_EMAIL')
