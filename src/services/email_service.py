@@ -18,10 +18,18 @@ class Email(Date):
     body = "Please find the attached logs files."
     
     last_thirty_days = self.get_last_thirty_days()
+    
+    logs_file = f'logs/{datetime.today().strftime("%d_%m_%Y")}_logs.log'
     attachment_paths = [
-      f'already_processed_phones/phone_numbers_{last_thirty_days}.xlsx',
-      f'logs/{datetime.today().strftime("%d_%m_%Y")}_logs.log'
+      logs_file
     ]
+    
+    df_phone_numbers_processed = f'already_processed_phones/phone_numbers_{last_thirty_days}.xlsx'
+    if  os.path.exists(df_phone_numbers_processed):
+      attachment_paths = [
+        df_phone_numbers_processed,
+        logs_file
+      ]
 
     for attachment_path in attachment_paths:
       self.config_send_email(subject, body, attachment_path)
