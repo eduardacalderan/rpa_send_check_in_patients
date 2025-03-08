@@ -1,7 +1,7 @@
 # Envio de check-in para pacientes
 
 ***Para o envio de check-in deverá ser pego todos os pacientes que foram atendidos há 30 dias atrás. Esse processo deverá ser feito diariamente. Não pode ser enviado mensagem duplicada para os pacientes no mesmo dia, para isso, todos os contatos são salvos em um excel do dia atual, com o número de telefone, data de envio de mensagem e o status do envio. Através desse excel, é validado se o paciente já recebeu a mensagem ou não. Se ele recebeu, não envia novamente e vai para o próximo. Se ele não recebeu, segue o processo normalmente.***  
-***Este RPA não deve ser executado no sábado e no domingo. Na segunda-feira, se faz necessário processar o dia correspondentes ao sábado e ao domingo***
+***Este RPA não deve ser executado no sábado e no domingo. Na segunda-feira, se faz necessário processar o dia correspondente ao sábado e ao domingo***
 
 ## Passo a passo do processo realizado
 
