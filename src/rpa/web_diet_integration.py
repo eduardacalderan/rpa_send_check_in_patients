@@ -90,7 +90,7 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
     
   def search_certain_date(self, last_thirty_days):
     try:        
-      if self.validate_monday():
+      if Date.validate_monday():
         last_thirty_days = last_thirty_days[0]
         
       search_for_date = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]')
@@ -123,13 +123,13 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
         
         # capture phone number and verify if it has already been processed
         phone_number = self.format_phone_number()
-        verify_phone_number_already_processed = ExcelService.verify_phone_number_already_processed(self, phone_number, last_thirty_days)
+        verify_phone_number_already_processed = ExcelService.verify_phone_number_already_processed(phone_number, last_thirty_days)
         if verify_phone_number_already_processed == 'ALREADY_PROCESSED':
           self.back_to_original_window()
           continue
         
         status_processed = self.get_whatsapp_status_processes()
-        ExcelService.create_excel_with_phone_numbers_and_names(self, phone_number, name, self.get_last_thirty_days(), status_processed)
+        ExcelService.create_excel_with_phone_numbers_and_names(phone_number, name, self.get_last_thirty_days(), status_processed)
         
         # Switch back to the original window
         self.back_to_original_window()
@@ -140,7 +140,7 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
     
   def capture_scheduled_patients(self, last_thirty_days):
     try:
-      if not self.validate_monday():
+      if not Date.validate_monday():
         scheduled_patients = self.driver.find_elements(By.XPATH, f'//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]')
       else: 
         formatted_date_thirty_one, formatted_date_thirty, formatted_date_twenty_nine = self.get_last_thirty_days()
@@ -153,7 +153,7 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
     
   def get_name_patient(self, last_thirty_days, idx):
     try:
-      if not self.validate_monday():
+      if not Date.validate_monday():
         name = self.wait.until(EC.visibility_of_element_located((By.XPATH, f'(//a[@aria-label="{last_thirty_days}"]//parent::div//following-sibling::div[1]//div//div[contains(@style, "background-color: #1e88e5") or contains(@style, "background-color: #54a0ff")]//div[contains(@style, "width:70%")])[{idx+1}]'))).text
       else:
         formatted_date_thirty_one, formatted_date_thirty, formatted_date_twenty_nine = self.get_last_thirty_days()
