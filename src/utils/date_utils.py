@@ -12,7 +12,7 @@ class Date:
       locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
       today = datetime.today()
       
-      if self.validate_monday():
+      if Date.validate_monday():
         last_twenty_nine_days = today - timedelta(days=29)
         formatted_date_twenty_nine = last_twenty_nine_days.strftime('%d de %B de %Y')
         
@@ -43,8 +43,9 @@ class Date:
     except Exception as e:
       logger.error(f'Error getting last thirty days: {e}')
       raise
-    
-  def validate_monday(self):
+  
+  @staticmethod  
+  def validate_monday():
     """Validate if today is Monday."""
     try:
       today = datetime.today()
