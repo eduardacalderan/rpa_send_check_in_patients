@@ -3,6 +3,7 @@ import os
 import pandas as pd 
 
 class ExcelService:
+  @staticmethod
   def create_excel_with_phone_numbers_and_names(self, phone_number, name, date, status):
     file_path = f"already_processed_phones/phone_numbers_{date}.xlsx"
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
@@ -19,6 +20,7 @@ class ExcelService:
     df = pd.concat([df, new_entry], ignore_index=True)
     df.to_excel(file_path, index=False)
   
+  @staticmethod
   def verify_phone_number_already_processed(self, phone_number, date):
     file_path = f"already_processed_phones/phone_numbers_{date}.xlsx"
     if os.path.exists(file_path):

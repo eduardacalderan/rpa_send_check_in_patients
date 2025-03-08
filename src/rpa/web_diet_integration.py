@@ -123,13 +123,13 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
         
         # capture phone number and verify if it has already been processed
         phone_number = self.format_phone_number()
-        verify_phone_number_already_processed = ExcelService.verify_phone_number_already_processed(self, phone_number, last_thirty_days)
+        verify_phone_number_already_processed = ExcelService.verify_phone_number_already_processed(phone_number, last_thirty_days)
         if verify_phone_number_already_processed == 'ALREADY_PROCESSED':
           self.back_to_original_window()
           continue
         
         status_processed = self.get_whatsapp_status_processes()
-        ExcelService.create_excel_with_phone_numbers_and_names(self, phone_number, name, self.get_last_thirty_days(), status_processed)
+        ExcelService.create_excel_with_phone_numbers_and_names(phone_number, name, self.get_last_thirty_days(), status_processed)
         
         # Switch back to the original window
         self.back_to_original_window()
