@@ -108,32 +108,38 @@ class WebDietAutomation(BaseNavigator, Date, WhatsApp):
 
       scheduled_patients = self.capture_scheduled_patients(last_thirty_days)
         
-      for idx, scheduled_patient in enumerate(scheduled_patients):      
-        # storage patient name
-        name = self.get_name_patient(last_thirty_days, idx)
-        # Capture the patients scheduled
-        scheduled_patient.click()
-        # CLick on the request confirmation button
-        self.request_confirmation()
-        # Select the check-in message
-        self.select_check_in_message()        
-        # Switch to the new window opened by WhatsApp Web
-        self.switch_to_new_window(-1)
-        logger.debug('Switched to WhatsApp Web window.')
-        
-        # capture phone number and verify if it has already been processed
-        phone_number = self.format_phone_number()
-        verify_phone_number_already_processed = ExcelService.verify_phone_number_already_processed(phone_number, last_thirty_days)
-        if verify_phone_number_already_processed == 'ALREADY_PROCESSED':
+      for idx, scheduled_patient in enumerate(scheduled_patients):   
+        try:   
+          # storage patient name
+          name = self.get_name_patient(last_thirty_days, idx)
+          # Capture the patients scheduled
+          scheduled_patient.click()
+          # CLick on the request confirmation button
+          self.request_confirmation()
+          # Select the check-in message
+          self.select_check_in_message()        
+          # Switch to the new window opened by WhatsApp Web
+          self.switch_to_new_window(-1)
+          logger.debug('Switched to WhatsApp Web window.')
+          
+          # capture phone number and verify if it has already been processed
+          phone_number = self.format_phone_number()
+          verify_phone_number_already_processed = ExcelService.verify_phone_number_already_processed(phone_number, last_thirty_days)
+          if verify_phone_number_already_processed == 'ALREADY_PROCESSED':
+            self.back_to_original_window()
+            continue
+          
+          status_processed = self.get_whatsapp_status_processes()
+          ExcelService.create_excel_with_phone_numbers_and_names(phone_number, name, self.get_last_thirty_days(), status_processed)
+          
+          # Switch back to the original window
           self.back_to_original_window()
-          continue
-        
-        status_processed = self.get_whatsapp_status_processes()
-        ExcelService.create_excel_with_phone_numbers_and_names(phone_number, name, self.get_last_thirty_days(), status_processed)
-        
-        # Switch back to the original window
-        self.back_to_original_window()
-        self.wait.until(EC.visibility_of_element_located((By.XPATH, '//button[@title="Mês"]'))).click()
+          self.wait.until(EC.visibility_of_element_located((By.XPATH, '//button[@title="Mês"]'))).click()
+        except Exception as e:
+          logger.error(f'Error processing patient scheduling modal: {e}')
+          status_processed = 'Not sent'
+          ExcelService.create_excel_with_phone_numbers_and_names(phone_number, name, self.get_last_thirty_days(), status_processed)
+          continue  
       logger.debug('Opened patients scheduling modal and sended messages successfully.')
     except Exception as e:
       raise Exception(f'Error opening patient scheduling modal: {e}')
